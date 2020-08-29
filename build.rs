@@ -2,48 +2,22 @@
  * This file is under the BSD license.
  * See the end of the file for the full license agreement.
  */
+extern crate bindgen;
 
-#[repr(C, packed)]
-pub struct Vector {
-	x: i64,
-	y: i64,
-	z: i64,
-}
+use std::env;
+use std::path::PathBuf;
 
-pub struct ChunkPoints {
-	points: Vec<Vector>,
-}
+fn main() {
+	println!("cargo:rerun-if-changed=link.hpp");
 
-impl Vector {
-
-	#[inline]
-	pub fn new(x: i64, y: i64, z: i64) -> Vector {
-		Vector{x, y, z}
-	}
-
-	#[inline]
-	pub fn get_x(&self) -> i64 {
-		self.x
-	}
-
-	#[inline]
-	pub fn get_y(&self) -> i64 {
-		self.y
-	}
-
-	#[inline]
-	pub fn get_z(&self) -> i64 {
-		self.z
-	}
-
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+	let bindings = bindgen::Builder::default()
+		.header("src/link.hpp")
+		.parse_callbacks(Box::new(bindgen::CargoCallbacks))
+		.generate()
+		.unwrap();
+	let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+	bindings
+		.write_to_file(out_path.join("bindings.rs")).unwrap();
 }
 
 /*
