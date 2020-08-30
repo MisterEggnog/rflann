@@ -2,8 +2,8 @@
  * This file is under the BSD license.
  * See the end of the file for the full license agreement.
  */
-#include <cassert>
 #include <cstdint>
+#include <vector>
 #include "nanoflann.hpp"
 
 using point = int64_t[3];
@@ -12,14 +12,11 @@ using namespace nanoflann;
 void get_points(point* buffer, size_t length, point vec);
 
 struct point_cloud {
-	const point* buffer_;
-	size_t length_;
+	std::vector<point> buffer_;
 
-	size_t kdtree_get_point_count() const { return length_; }
+	size_t kdtree_get_point_count() const { return buffer_.size(); }
 
 	int64_t kdtree_get_pt(const size_t id, int dim) const {
-		assert(id < length_);
-		assert(dim < 3);
 		return buffer_[id][dim];
 	}
 
@@ -27,24 +24,17 @@ struct point_cloud {
 	template <class BBOX>
 	bool kdtree_get_bbox(BBOX&) const { return false; }
 
-	point_cloud(const point* buffer, size_t length) {
-		buffer_ = buffer;
-		length_ = length;
-	}
 };
 
-void
-get_points_dynamc(const point* buffer, size_t length, point vec) {
-	auto cloud = point_cloud(buffer, length);
-	using KDTree = KDTreeSingleIndexDynamicAdaptor<
-		L2_Simple_Adaptor<int64_t, point_cloud>,
-		point_cloud,
-		3>;
-}
+using KDTree = KDTreeSingleIndexDynamicAdaptor<
+	L2_Simple_Adaptor<int64_t, point_cloud>,
+	point_cloud,
+	3>;
 
 void
-get_points_static(const point* buffer, size_t length, point vec) {
-	auto cloud = point_cloud(buffer, length);
+get_points_dynamc(const KDTree& pcloud, point vec) {
+	auto cloud = point_cloud();
+	auto index = KDTree(3, cloud, KDTreeSingleIndexAdaptorParams(10));
 }
 
 int
