@@ -8,7 +8,7 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-	println!("cargo:rerun-if-changed=link.hpp");
+	println!("cargo:rerun-if-changed=src/link.hpp");
 
 	let bindings = bindgen::Builder::default()
 		.header("src/link.hpp")

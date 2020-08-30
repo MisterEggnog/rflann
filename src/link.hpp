@@ -4,9 +4,13 @@
  */
 #include <cstdint>
 
+namespace normal {
+
 using point = int64_t[3];
 
-void init(const point& buffer, std::size_t size, std::size_t capacity);
+void init(const point* buffer, std::size_t size);
+
+}
 
 /*
  * Software License Agreement (BSD License)
