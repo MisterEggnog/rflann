@@ -1,5 +1,5 @@
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+mod bindings;
 
 #[repr(C, packed)]
 pub struct Vector {
