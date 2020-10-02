@@ -1,3 +1,6 @@
+
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
 #[repr(C, packed)]
 pub struct Vector {
 	x: i64,
