@@ -38,8 +38,22 @@ PointCloud::get_underlying_buffer() const {
 
 // Iterator(s)
 
-class PointCloudIter {
-	std::vector<Point>::const_iterator begin_, end_;
-
-	Point* next();
+struct PointCloudIter {
+	virtual ~PointCloudIter() = 0;
+	virtual Point const* next() = 0;
 };
+
+class PointBufIter: public PointCloudIter {
+	std::vector<Point>::const_iterator begin_, end_;
+public:
+	override ~PointBufIter() = default;
+
+	override Point const* next() {
+		if (begin >= end_)
+			return nullptr;
+		auto point = *begin_;
+		begin_++;
+		return point;
+	}
+};
+
