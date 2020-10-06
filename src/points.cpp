@@ -18,8 +18,9 @@ struct PointCloudIter {
 	virtual bool next(int64_t& x, int64_t& y, int64_t& z) = 0;
 };
 
-PointCloudIter* new_cloud();
-PointCloudIter* destroy_cloud();
+PointCloud* new_cloud();
+void destroy_cloud(PointCloud* cloud);
+void add_point(PointCloud& cloud, int64_t& x, int64_t& y, int64_t& z);
 PointCloudIter* get_points(const PointCloud& cloud);
 
 // End of fake include
