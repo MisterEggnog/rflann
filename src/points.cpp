@@ -9,14 +9,26 @@ using namespace nanoflann;
 
 
 // This should go in the include
+#include <cstdint>
+
+struct PointCloud;
+
 struct PointCloudIter {
 	virtual ~PointCloudIter() = 0;
 	virtual bool next(int64_t& x, int64_t& y, int64_t& z) = 0;
 };
 
-class PointBufIter {
+PointCloudIter* new_cloud();
+PointCloudIter* destroy_cloud();
+PointCloudIter* get_points(const PointCloud& cloud);
+
+// End of fake include
+
+class PointBufIter final: public PointCloudIter {
 	std::vector<Point>::const_iterator curr_, end_;
 public:
+	~PointBufIter() = default;
+
 	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
 
 	bool next(int64_t& x, int64_t& y, int64_t& z);
@@ -46,18 +58,17 @@ using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
 	Cloud,
 	3>;
 
-class PointCloud : PointCloudKd {
-public:
+struct PointCloud: PointCloudKd {
 	const std::vector<Point>& get_underlying_buffer() const {
 		return this->dataset.points_;
 	}
 
 };
 
-PointBufIter
+PointCloudIter*
 get_points(const PointCloud& cloud) {
 	auto& cloud_ = cloud.get_underlying_buffer();
-	return PointBufIter{cloud_.cbegin(), cloud_.cend()};
+	return new PointBufIter(cloud_.cbegin(), cloud_.cend());
 }
 
 // Iterator(s)
