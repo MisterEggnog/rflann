@@ -7,6 +7,27 @@ using Point = int64_t[3];
 
 using namespace nanoflann;
 
+
+// This should go in the include
+struct PointCloudIter {
+	virtual ~PointCloudIter() = 0;
+	virtual bool next(int64_t& x, int64_t& y, int64_t& z) = 0;
+};
+
+class PointBufIter {
+	std::vector<Point>::const_iterator curr_, end_;
+public:
+	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
+
+	bool next(int64_t& x, int64_t& y, int64_t& z);
+};
+
+class NearestPointIter {
+	// TO DO
+public:
+	bool next(int64_t& x, int64_t& y, int64_t& z);
+};
+
 struct Cloud {
 	std::vector<Point> points_;
 
@@ -26,34 +47,34 @@ using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
 	3>;
 
 class PointCloud : PointCloudKd {
-
-	const std::vector<Point>& get_underlying_buffer() const;
+public:
+	const std::vector<Point>& get_underlying_buffer() const {
+		return this->dataset.points_;
+	}
 
 };
 
-const std::vector<Point>&
-PointCloud::get_underlying_buffer() const {
-	return this->dataset.points_;
+PointBufIter
+get_points(const PointCloud& cloud) {
+	auto& cloud_ = cloud.get_underlying_buffer();
+	return PointBufIter{cloud_.cbegin(), cloud_.cend()};
 }
 
 // Iterator(s)
 
-struct PointCloudIter {
-	virtual ~PointCloudIter() = 0;
-	virtual Point const* next() = 0;
-};
+PointBufIter::PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end) {
+	curr_ = begin;
+	end_ = end;
+}
 
-class PointBufIter: public PointCloudIter {
-	std::vector<Point>::const_iterator begin_, end_;
-public:
-	override ~PointBufIter() = default;
-
-	override Point const* next() {
-		if (begin >= end_)
-			return nullptr;
-		auto point = *begin_;
-		begin_++;
-		return point;
-	}
-};
-
+bool
+PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
+	if (curr_ >= end_)
+		return false;
+	auto& val_at = *curr_;
+	x = val_at[0];
+	y = val_at[1];
+	z = val_at[2];
+	curr_++;
+	return true;
+}
