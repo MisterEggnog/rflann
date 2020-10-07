@@ -1,5 +1,6 @@
 
 #include <cstdint>
+#include <variant>
 #include <vector>
 #include "nanoflann.hpp"
 
@@ -9,23 +10,30 @@ using namespace nanoflann;
 
 
 // This should go in the include
-#include <cstdint>
+#include <stdint.h>
+
+extern "C" {
 
 struct PointCloud;
-
-struct PointCloudIter {
-	virtual ~PointCloudIter() = 0;
-	virtual bool next(int64_t& x, int64_t& y, int64_t& z) = 0;
-};
+struct PointCloudIter;
 
 PointCloud* new_cloud();
 void destroy_cloud(PointCloud* cloud);
 void add_point(PointCloud& cloud, int64_t& x, int64_t& y, int64_t& z);
 PointCloudIter* get_points(const PointCloud& cloud);
 
+void destroy_iter(PointCloudIter* iter);
+bool next(PointCloudIter& iter, int64_t& x, int64_t& y, int64_t& z);
+
+}
+
 // End of fake include
 
-class PointBufIter final: public PointCloudIter {
+struct PointCloudIter {
+	std::variant<PointBufIter, NearestPointIter> tagged_union_;
+};
+
+class PointBufIter final {
 	std::vector<Point>::const_iterator curr_, end_;
 public:
 	~PointBufIter() = default;
@@ -58,13 +66,14 @@ using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
 	L2_Adaptor<int64_t, Cloud>,
 	Cloud,
 	3>;
-
+extern "C" {
 struct PointCloud: PointCloudKd {
 	const std::vector<Point>& get_underlying_buffer() const {
 		return this->dataset.points_;
 	}
 
 };
+}
 
 PointCloudIter*
 get_points(const PointCloud& cloud) {
