@@ -19,6 +19,7 @@ fn build_lib() {
 		.cpp(true)
 		.file("src/points.cpp")
 		.include("src")
+		.shared_flag(true)
 		.compile("points");
 }
 
@@ -27,5 +28,5 @@ fn main() {
 	println!("cargo:rerun-if-changed=src/link.hpp");
 	println!("cargo:rerun-if-changed=src/points.cpp");
 	build_bindings();
-//	build_lib();
+	build_lib();
 }

@@ -1,6 +1,5 @@
 
 #include <cstdint>
-#include <variant>
 #include <vector>
 #include "nanoflann.hpp"
 
@@ -29,26 +28,6 @@ bool next(PointCloudIter& iter, int64_t& x, int64_t& y, int64_t& z);
 
 // End of fake include
 
-struct PointCloudIter {
-	std::variant<PointBufIter, NearestPointIter> tagged_union_;
-};
-
-class PointBufIter final {
-	std::vector<Point>::const_iterator curr_, end_;
-public:
-	~PointBufIter() = default;
-
-	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
-
-	bool next(int64_t& x, int64_t& y, int64_t& z);
-};
-
-class NearestPointIter {
-	// TO DO
-public:
-	bool next(int64_t& x, int64_t& y, int64_t& z);
-};
-
 struct Cloud {
 	std::vector<Point> points_;
 
@@ -66,20 +45,59 @@ using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
 	L2_Adaptor<int64_t, Cloud>,
 	Cloud,
 	3>;
-extern "C" {
 struct PointCloud: PointCloudKd {
 	const std::vector<Point>& get_underlying_buffer() const {
 		return this->dataset.points_;
 	}
 
 };
-}
 
-PointCloudIter*
-get_points(const PointCloud& cloud) {
-	auto& cloud_ = cloud.get_underlying_buffer();
-	return new PointBufIter(cloud_.cbegin(), cloud_.cend());
-}
+class PointBufIter {
+	std::vector<Point>::const_iterator curr_, end_;
+public:
+	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
+
+	bool next(int64_t& x, int64_t& y, int64_t& z);
+};
+
+class NearestPointIter {
+	// TO DO
+public:
+	bool next(int64_t& x, int64_t& y, int64_t& z);
+};
+
+struct PointCloudIter {
+	union {
+		PointBufIter points;
+		NearestPointIter nearests;
+	};
+	enum {
+		buf_iter,
+		nearest,
+	} type;
+
+	~PointCloudIter() {
+		switch (type) {
+			case buf_iter: points.~PointBufIter();
+			break;
+			case nearest: nearests.~NearestPointIter();
+			break;
+		}
+	}
+
+	PointCloudIter(PointBufIter&& buf) {
+		points = std::move(buf);
+		type   = buf_iter;
+	}
+
+	PointCloudIter(NearestPointIter&& near) {
+		nearests = std::move(near);
+		type     = nearest;
+	}
+
+	bool next(int64_t& x, int64_t& y, int64_t& z);
+};
+
 
 // Iterator(s)
 
@@ -99,3 +117,12 @@ PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
 	curr_++;
 	return true;
 }
+
+// C wrapper functions
+
+PointCloudIter*
+get_points(const PointCloud& cloud) {
+	auto& cloud_ = cloud.get_underlying_buffer();
+	return new PointCloudIter(PointBufIter(cloud_.cbegin(), cloud_.cend()));
+}
+
