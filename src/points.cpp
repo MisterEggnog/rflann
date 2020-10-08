@@ -16,13 +16,15 @@ extern "C" {
 struct PointCloud;
 struct PointCloudIter;
 
+// All pointers passed are considered not null
+
 PointCloud* new_cloud();
 void destroy_cloud(PointCloud* cloud);
-void add_point(PointCloud& cloud, int64_t& x, int64_t& y, int64_t& z);
-PointCloudIter* get_points(const PointCloud& cloud);
+void add_point(PointCloud* cloud, int64_t* x, int64_t* y, int64_t* z);
+PointCloudIter* get_points(const PointCloud* cloud);
 
 void destroy_iter(PointCloudIter* iter);
-bool next(PointCloudIter& iter, int64_t& x, int64_t& y, int64_t& z);
+bool next(PointCloudIter* iter, int64_t* x, int64_t* y, int64_t* z);
 
 }
 
@@ -121,8 +123,8 @@ PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
 // C wrapper functions
 
 PointCloudIter*
-get_points(const PointCloud& cloud) {
-	auto& cloud_ = cloud.get_underlying_buffer();
+get_points(const PointCloud* cloud) {
+	auto& cloud_ = cloud->get_underlying_buffer();
 	return new PointCloudIter(PointBufIter(cloud_.cbegin(), cloud_.cend()));
 }
 
