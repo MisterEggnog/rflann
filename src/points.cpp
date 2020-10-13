@@ -1,15 +1,10 @@
 
 #include <cstdint>
 #include <vector>
-#include "nanoflann.hpp"
-
-using Point = int64_t[3];
-
-using namespace nanoflann;
-
 
 // This should go in the include
 #include <stdint.h>
+#include <stddef.h>
 
 extern "C" {
 
@@ -19,6 +14,7 @@ struct PointCloudIter;
 // All pointers passed are considered not null
 
 PointCloud* new_cloud();
+PointCloud* from_points(int64_t** array, size_t size);
 void destroy_cloud(PointCloud* cloud);
 void add_point(PointCloud* cloud, int64_t* x, int64_t* y, int64_t* z);
 PointCloudIter* get_points(const PointCloud* cloud);
@@ -30,78 +26,12 @@ bool next(PointCloudIter* iter, int64_t* x, int64_t* y, int64_t* z);
 
 // End of fake include
 
-struct Cloud {
-	std::vector<Point> points_;
-
-	inline size_t kdtree_get_point_count() const { return points_.size(); }
-
-	inline int64_t kdtree_get_pt(const size_t idx, const size_t dim) const { return points_[idx][dim]; }
-
-	// Don't actually know what this does
-	template <class BBOX>
-	bool kdtree_get_bbox(BBOX&) const { return false; }
-};
+#include "cloud.hpp"
+#include "point_cloud.hpp"
+#include "point_iters.hpp"
 
 
-using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
-	L2_Adaptor<int64_t, Cloud>,
-	Cloud,
-	3>;
-struct PointCloud: PointCloudKd {
-	const std::vector<Point>& get_underlying_buffer() const {
-		return this->dataset.points_;
-	}
-
-};
-
-class PointBufIter {
-	std::vector<Point>::const_iterator curr_, end_;
-public:
-	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
-
-	bool next(int64_t& x, int64_t& y, int64_t& z);
-};
-
-class NearestPointIter {
-	// TO DO
-public:
-	bool next(int64_t& x, int64_t& y, int64_t& z);
-};
-
-struct PointCloudIter {
-	union {
-		PointBufIter points;
-		NearestPointIter nearests;
-	};
-	enum {
-		buf_iter,
-		nearest,
-	} type;
-
-	~PointCloudIter() {
-		switch (type) {
-			case buf_iter: points.~PointBufIter();
-			break;
-			case nearest: nearests.~NearestPointIter();
-			break;
-		}
-	}
-
-	PointCloudIter(PointBufIter&& buf) {
-		points = std::move(buf);
-		type   = buf_iter;
-	}
-
-	PointCloudIter(NearestPointIter&& near) {
-		nearests = std::move(near);
-		type     = nearest;
-	}
-
-	bool next(int64_t& x, int64_t& y, int64_t& z);
-};
-
-
-// Iterator(s)
+// Internal functions
 
 PointBufIter::PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end) {
 	curr_ = begin;
