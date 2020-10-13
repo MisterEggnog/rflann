@@ -2,33 +2,10 @@
 #include <cstdint>
 #include <vector>
 
-// This should go in the include
-#include <stdint.h>
-#include <stddef.h>
-
-extern "C" {
-
-struct PointCloud;
-struct PointCloudIter;
-
-// All pointers passed are considered not null
-
-PointCloud* new_cloud();
-PointCloud* from_points(int64_t** array, size_t size);
-void destroy_cloud(PointCloud* cloud);
-void add_point(PointCloud* cloud, int64_t* x, int64_t* y, int64_t* z);
-PointCloudIter* get_points(const PointCloud* cloud);
-
-void destroy_iter(PointCloudIter* iter);
-bool next(PointCloudIter* iter, int64_t* x, int64_t* y, int64_t* z);
-
-}
-
-// End of fake include
-
 #include "cloud.hpp"
 #include "point_cloud.hpp"
 #include "point_iters.hpp"
+#include "link.h"
 
 
 // Internal functions
