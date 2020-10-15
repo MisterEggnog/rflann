@@ -25,8 +25,14 @@ fn build_lib() {
 
 fn main() {
 	println!("cargo:rerun-if-changed=build.rs");
-	println!("cargo:rerun-if-changed=src/link.hpp");
-	println!("cargo:rerun-if-changed=src/points.cpp");
+
+	macro_rules! source_check { () => {"cargo:rerun-if-changed=src/{}"} };
+	println!(source_check!(), "cloud.hpp");
+	println!(source_check!(), "point_cloud.hpp");
+	println!(source_check!(), "point_iters.hpp");
+	println!(source_check!(), "link.h");
+	println!(source_check!(), "points.hpp");
+
 	build_bindings();
 	build_lib();
 }
