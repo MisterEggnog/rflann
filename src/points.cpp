@@ -10,11 +10,11 @@
 
 // Internal functions
 
-PointCloud::PointCloud(std::vector<Point>&& cloud):
+PointCloud::PointCloud(std::vector<PointIntern>&& cloud):
 	PointCloudKd(3, Cloud(std::move(cloud)), KDTreeSingleIndexAdaptorParams(10)) {
 }
 
-PointBufIter::PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end) {
+PointBufIter::PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end) {
 	curr_ = begin;
 	end_ = end;
 }
@@ -24,9 +24,9 @@ PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
 	if (curr_ >= end_)
 		return false;
 	auto& val_at = *curr_;
-	x = val_at[0];
-	y = val_at[1];
-	z = val_at[2];
+	x = val_at.x;
+	y = val_at.y;
+	z = val_at.z;
 	curr_++;
 	return true;
 }
@@ -35,17 +35,17 @@ PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
 
 PointCloud*
 new_cloud() {
-	std::vector<Point> empty;
+	std::vector<PointIntern> empty;
 	return new PointCloud(std::move(empty));
 }
 
 PointCloud*
-from_points(int64_t** array, size_t size) {
-	std::vector<Point> points(size);
+from_points(PointIntern* array, size_t size) {
+	std::vector<PointIntern> points(size);
 	for (size_t i = 0; i < size; i++) {
-		points[i][0] = array[i][0];
-		points[i][1] = array[i][1];
-		points[i][2] = array[i][2];
+		points[i].x = array[i].x;
+		points[i].y = array[i].y;
+		points[i].z = array[i].z;
 	}
 	return new PointCloud(std::move(points));
 }

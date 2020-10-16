@@ -4,9 +4,9 @@
 #include "point_cloud.hpp"
 
 class PointBufIter {
-	std::vector<Point>::const_iterator curr_, end_;
+	std::vector<PointIntern>::const_iterator curr_, end_;
 public:
-	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
+	PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end);
 
 	bool next(int64_t& x, int64_t& y, int64_t& z);
 };

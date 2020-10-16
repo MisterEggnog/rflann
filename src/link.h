@@ -8,6 +8,10 @@
 extern "C" {
 #endif // __cplusplus
 
+struct PointIntern {
+	int64_t x, y, z;
+};
+
 struct PointCloud;
 struct PointCloudIter;
 
@@ -15,13 +19,13 @@ struct PointCloudIter;
 
 PointCloud* new_cloud();
 // Array is two dimensional array with a dim[n][3]
-PointCloud* from_points(int64_t** array, size_t size);
+PointCloud* from_points(PointIntern* array, size_t size);
 void destroy_cloud(PointCloud* cloud);
-void add_point(PointCloud* cloud, int64_t* x, int64_t* y, int64_t* z);
+void add_point(PointCloud* cloud, PointIntern* point);
 PointCloudIter* get_points(const PointCloud* cloud);
 
 void destroy_iter(PointCloudIter* iter);
-bool next(PointCloudIter* iter, int64_t* x, int64_t* y, int64_t* z);
+bool next(PointCloudIter* iter, PointIntern point);
 
 #ifdef __cplusplus
 }
