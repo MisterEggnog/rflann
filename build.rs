@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 fn build_bindings() {
 	let bindings = bindgen::Builder::default()
-		.header("src/link.hpp")
+		.header("src/link.h")
 		.parse_callbacks(Box::new(bindgen::CargoCallbacks))
 		.generate()
 		.unwrap();
