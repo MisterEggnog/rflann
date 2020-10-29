@@ -7,7 +7,7 @@ struct PointCloudIter {
 
 	virtual ~PointCloudIter() = 0;
 
-	virtual bool next(int64_t& x, int64_t& y, int64_t& z) = 0;
+	virtual bool next(PointIntern& point) = 0;
 };
 
 
@@ -18,7 +18,7 @@ public:
 
 	~PointBufIter() final;
 
-	bool next(int64_t& x, int64_t& y, int64_t& z) final;
+	bool next(PointIntern& point) final;
 };
 
 class NearestPointIter final: public PointCloudIter {
@@ -26,7 +26,7 @@ class NearestPointIter final: public PointCloudIter {
 public:
 	~NearestPointIter() final;
 
-	bool next(int64_t& x, int64_t& y, int64_t& z) final;
+	bool next(PointIntern& point) final;
 };
 
 

@@ -18,7 +18,6 @@ struct PointCloudIter;
 // All pointers passed are considered not null
 
 struct PointCloud* new_cloud();
-// Array is two dimensional array with a dim[n][3]
 struct PointCloud* from_points(struct PointIntern* array, size_t size);
 void destroy_cloud(struct PointCloud* cloud);
 void add_point(struct PointCloud* cloud, struct PointIntern* point);
