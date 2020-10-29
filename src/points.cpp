@@ -19,6 +19,8 @@ PointBufIter::PointBufIter(std::vector<PointIntern>::const_iterator begin, std::
 	end_ = end;
 }
 
+PointBufIter::~PointBufIter() = default;
+
 bool
 PointBufIter::next(int64_t& x, int64_t& y, int64_t& z) {
 	if (curr_ >= end_)
@@ -42,11 +44,9 @@ new_cloud() {
 PointCloud*
 from_points(PointIntern* array, size_t size) {
 	std::vector<PointIntern> points(size);
-	for (size_t i = 0; i < size; i++) {
-		points[i].x = array[i].x;
-		points[i].y = array[i].y;
-		points[i].z = array[i].z;
-	}
+	points.reserve(size);
+	for (size_t i = 0; i < size; i++)
+		points.push_back(array[i]);
 	return new PointCloud(std::move(points));
 }
 
@@ -58,6 +58,6 @@ destroy_cloud(PointCloud* cloud) {
 PointCloudIter*
 get_points(const PointCloud* cloud) {
 	auto& cloud_ = cloud->get_underlying_buffer();
-	return new PointCloudIter(PointBufIter(cloud_.cbegin(), cloud_.cend()));
+	return new PointBufIter(cloud_.cbegin(), cloud_.cend());
 }
 
