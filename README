@@ -1,9 +1,10 @@
 This library was intended to be a kd-tree structure for rust.
 It interfaces with the nanoflann library, I ultimately decided that this
 library would not be useful for my purposes.
-This library could use some more work before it's suitable for public use, such
+This library could use some more work before it's suitable for use, such
 as supporting the common numerical types in rust & it currently does not have
 any support for the rust side of this library.
 
-If you want to do anything with this library, go ahead, I doubt I will be
-working on this more in the future.
+If you want to do anything with this library, go ahead, as it will need a lot
+of changes before it works to my satisfaction.
+With other projects & school, I don't know when I can get back to this.
