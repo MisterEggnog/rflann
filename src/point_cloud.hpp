@@ -11,7 +11,7 @@ See end of file for license
 using namespace nanoflann;
 
 using PointCloudKd = KDTreeSingleIndexDynamicAdaptor<
-	L2_Adaptor<int64_t, Cloud>,
+	L2_Adaptor<float, Cloud>,
 	Cloud,
 	3>;
 struct PointCloud: PointCloudKd {
