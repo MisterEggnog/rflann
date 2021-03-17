@@ -32,8 +32,8 @@ struct PointCloud {
 
 
 private:
-	struct impl;
-	std::unique_ptr<impl> p_impl;
+	struct Impl;
+	std::unique_ptr<Impl> pimpl;
 };
 
 

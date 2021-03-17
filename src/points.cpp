@@ -9,21 +9,40 @@ See end of file for license
 #include "point_iters.hpp"
 #include "link.hpp"
 
+struct PointCloud::Impl: public PointCloudKd {
+	Impl(std::vector<PointIntern>&& points)
+	: PointCloudKd(3, Cloud(std::move(points)), KDTreeSingleIndexAdaptorParams(10)) {
+	}
+
+	const std::vector<PointIntern>&
+	get_underlying_buffer() const {
+		return this->dataset.points_;
+	}
+};
 
 // Internal functions
 
-#if 0
-
-PointCloud::PointCloud(std::vector<PointIntern>&& cloud):
-	PointCloudKd(3, Cloud(std::move(cloud)), KDTreeSingleIndexAdaptorParams(10)) {
+PointCloud::PointCloud() noexcept {
+	std::vector<PointIntern> empty;
+	pimpl = std::make_unique<Impl>(std::move(empty));
 }
 
+PointCloud::PointCloud(rust::Slice<const PointIntern> points) noexcept {
+	std::vector<PointIntern> vcpoints;
+	vcpoints.reserve(points.size());
+	for (const auto& point: points) {
+		vcpoints.push_back(point);
+	}
+	pimpl = std::make_unique<Impl>(std::move(vcpoints));
+}
+
+
+#if 0
 PointBufIter::PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end) {
 	curr_ = begin;
 	end_ = end;
 }
-
-PointBufIter::~PointBufIter() = default;
+#endif
 
 bool
 PointBufIter::next(PointIntern& point) {
@@ -36,6 +55,7 @@ PointBufIter::next(PointIntern& point) {
 
 // C wrapper functions
 
+#if 0
 PointCloud*
 new_cloud() {
 	std::vector<PointIntern> empty;
@@ -51,27 +71,13 @@ from_points(PointIntern* array, size_t size) {
 	return new PointCloud(std::move(points));
 }
 
-void
-destroy_cloud(PointCloud* cloud) {
-	delete cloud;
-}
-
 PointCloudIter*
 get_points(const PointCloud* cloud) {
 	auto& cloud_ = cloud->get_underlying_buffer();
 	return new PointBufIter(cloud_.cbegin(), cloud_.cend());
 }
-
-void
-destroy_iter(PointCloudIter* iter) {
-	delete iter;
-}
-
-int
-next(PointCloudIter* iter, PointIntern* point) {
-	return iter->next(*point);
-}
 #endif
+
 
 /*
 Copyright 2020 Baldwin, Josiah
