@@ -1,25 +1,43 @@
 /*
 See end of file for license
 */
-#ifndef RFLANN_SRC_LINK_H_INCLUDED
-#define RFLANN_SRC_LINK_H_INCLUDED
+#ifndef RFLANN_SRC_LINK_HPP_INCLUDED
+#define RFLANN_SRC_LINK_HPP_INCLUDED
 
-#include <stdint.h>
-#include <stddef.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
+#include <cstdint>
+#include <cstddef>
+#include <memory>
+#include <rust/cxx.h>
 
 struct PointIntern {
 	int64_t x, y, z;
 };
 
-struct PointCloud;
-struct PointCloudIter;
+struct PointCloudIter {
+	virtual ~PointCloudIter() = 0;
+	virtual bool next(PointIntern& point) = 0;
+};
 
-// All pointers passed are considered not null
+struct PointCloud {
+	PointCloud() noexcept;
+	PointCloud(rust::Slice<const PointIntern> points) noexcept;
+	PointCloud(PointCloud&&) noexcept = default;
+	PointCloud(const PointCloud&) = delete;
+	PointCloud& operator=(const PointCloud&) = delete;
+	PointCloud& operator=(PointCloud&&) = default;
 
+	void add_point(const PointIntern& point);
+
+	std::unique_ptr<PointCloudIter> get_points() const;
+
+
+private:
+	struct impl;
+	std::unique_ptr<impl> p_impl;
+};
+
+
+#if 0
 struct PointCloud* new_cloud();
 struct PointCloud* from_points(struct PointIntern* array, size_t size);
 void destroy_cloud(struct PointCloud* cloud);
@@ -28,12 +46,9 @@ struct PointCloudIter* get_points(const struct PointCloud* cloud);
 
 void destroy_iter(struct PointCloudIter* iter);
 int next(struct PointCloudIter* iter, struct PointIntern* point);
+#endif
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
-#endif // RFLANN_SRC_LINK_H_INCLUDED
+#endif // RFLANN_SRC_LINK_HPP_INCLUDED
 /*
 Copyright 2020 Baldwin, Josiah
 

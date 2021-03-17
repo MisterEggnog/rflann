@@ -12,6 +12,8 @@ See end of file for license
 
 // Internal functions
 
+#if 0
+
 PointCloud::PointCloud(std::vector<PointIntern>&& cloud):
 	PointCloudKd(3, Cloud(std::move(cloud)), KDTreeSingleIndexAdaptorParams(10)) {
 }
@@ -69,6 +71,7 @@ int
 next(PointCloudIter* iter, PointIntern* point) {
 	return iter->next(*point);
 }
+#endif
 
 /*
 Copyright 2020 Baldwin, Josiah

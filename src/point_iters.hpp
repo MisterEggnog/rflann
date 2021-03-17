@@ -6,12 +6,14 @@ See end of file for license
 
 #include "point_cloud.hpp"
 
+#if 0
 struct PointCloudIter {
 
 	virtual ~PointCloudIter() = 0;
 
 	virtual bool next(PointIntern& point) = 0;
 };
+#endif
 
 
 class PointBufIter final: public PointCloudIter {
