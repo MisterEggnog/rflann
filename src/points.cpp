@@ -36,13 +36,16 @@ PointCloud::PointCloud(rust::Slice<const PointIntern> points) noexcept {
 	pimpl = std::make_unique<Impl>(std::move(vcpoints));
 }
 
+std::unique_ptr<PointCloudIter>
+PointCloud::get_points() const {
+	auto& cloud_ = pimpl->get_underlying_buffer();
+	return std::make_unique<PointBufIter>(cloud_.cbegin(), cloud_.cend());
+}
 
-#if 0
 PointBufIter::PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end) {
 	curr_ = begin;
 	end_ = end;
 }
-#endif
 
 bool
 PointBufIter::next(PointIntern& point) {
@@ -52,31 +55,6 @@ PointBufIter::next(PointIntern& point) {
 	curr_++;
 	return true;
 }
-
-// C wrapper functions
-
-#if 0
-PointCloud*
-new_cloud() {
-	std::vector<PointIntern> empty;
-	return new PointCloud(std::move(empty));
-}
-
-PointCloud*
-from_points(PointIntern* array, size_t size) {
-	std::vector<PointIntern> points(size);
-	points.reserve(size);
-	for (size_t i = 0; i < size; i++)
-		points.push_back(array[i]);
-	return new PointCloud(std::move(points));
-}
-
-PointCloudIter*
-get_points(const PointCloud* cloud) {
-	auto& cloud_ = cloud->get_underlying_buffer();
-	return new PointBufIter(cloud_.cbegin(), cloud_.cend());
-}
-#endif
 
 
 /*
