@@ -4,7 +4,7 @@ See end of file for license
 #ifndef RFLANN_SRC_POINT_CLOUD_HPP_INCLUDED
 #define RFLANN_SRC_POINT_CLOUD_HPP_INCLUDED
 
-#include "link.h"
+#include "link.hpp"
 #include "nanoflann.hpp"
 #include "cloud.hpp"
 

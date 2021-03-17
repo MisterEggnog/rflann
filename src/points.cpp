@@ -7,7 +7,7 @@ See end of file for license
 #include "cloud.hpp"
 #include "point_cloud.hpp"
 #include "point_iters.hpp"
-#include "link.h"
+#include "link.hpp"
 
 
 // Internal functions
