@@ -16,24 +16,24 @@ using PointCloudKd = nf::KDTreeSingleIndexDynamicAdaptor<
 	3>;
 
 struct PointCloud::Impl: public PointCloudKd {
-	Impl(std::vector<PointIntern>&& points)
+	Impl(std::vector<Point>&& points)
 	: PointCloudKd(3, Cloud(std::move(points)), nf::KDTreeSingleIndexAdaptorParams(10)) {
 	}
 
-	const std::vector<PointIntern>&
+	const std::vector<Point>&
 	get_underlying_buffer() const {
 		return this->dataset.points_;
 	}
 };
 
 class PointBufIter final: public PointCloudIter {
-	std::vector<PointIntern>::const_iterator curr_, end_;
+	std::vector<Point>::const_iterator curr_, end_;
 public:
-	PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end);
+	PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end);
 
 	~PointBufIter() final;
 
-	bool next(PointIntern& point) final;
+	bool next(Point& point) final;
 };
 
 
@@ -42,12 +42,12 @@ public:
 // Internal functions
 
 PointCloud::PointCloud() noexcept {
-	std::vector<PointIntern> empty;
+	std::vector<Point> empty;
 	pimpl = std::make_unique<Impl>(std::move(empty));
 }
 
-PointCloud::PointCloud(rust::Slice<const PointIntern> points) noexcept {
-	std::vector<PointIntern> vcpoints;
+PointCloud::PointCloud(rust::Slice<const Point> points) noexcept {
+	std::vector<Point> vcpoints;
 	vcpoints.reserve(points.size());
 	for (const auto& point: points) {
 		vcpoints.push_back(point);
@@ -61,13 +61,13 @@ PointCloud::get_points() const {
 	return std::make_unique<PointBufIter>(cloud_.cbegin(), cloud_.cend());
 }
 
-PointBufIter::PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end) {
+PointBufIter::PointBufIter(std::vector<Point>::const_iterator begin, std::vector<Point>::const_iterator end) {
 	curr_ = begin;
 	end_ = end;
 }
 
 bool
-PointBufIter::next(PointIntern& point) {
+PointBufIter::next(Point& point) {
 	if (curr_ >= end_)
 		return false;
 	point = *curr_;

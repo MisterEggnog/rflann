@@ -9,24 +9,24 @@ See end of file for license
 #include <memory>
 #include <rust/cxx.h>
 
-struct PointIntern {
+struct Point {
 	int64_t x, y, z;
 };
 
 struct PointCloudIter {
 	virtual ~PointCloudIter() = 0;
-	virtual bool next(PointIntern& point) = 0;
+	virtual bool next(Point& point) = 0;
 };
 
 struct PointCloud {
 	PointCloud() noexcept;
-	PointCloud(rust::Slice<const PointIntern> points) noexcept;
+	PointCloud(rust::Slice<const Point> points) noexcept;
 	PointCloud(PointCloud&&) noexcept = default;
 	PointCloud(const PointCloud&) = delete;
 	PointCloud& operator=(const PointCloud&) = delete;
 	PointCloud& operator=(PointCloud&&) = default;
 
-	void add_point(const PointIntern& point);
+	void add_point(const Point& point);
 
 	std::unique_ptr<PointCloudIter> get_points() const;
 

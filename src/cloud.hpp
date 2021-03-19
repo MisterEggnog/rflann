@@ -9,9 +9,9 @@ See end of file for license
 #include <vector>
 
 struct Cloud {
-	std::vector<PointIntern> points_;
+	std::vector<Point> points_;
 
-	inline Cloud(std::vector<PointIntern>&& points) {
+	inline Cloud(std::vector<Point>&& points) {
 		points_ = std::move(points);
 	}
 
