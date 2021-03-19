@@ -4,6 +4,7 @@ See end of file for license
 
 #[cxx::bridge]
 mod ffi {
+	#[derive(Copy, Clone, Default, Debug, PartialEq)]
 	struct Point {
 		x: f64,
 		y: f64,
@@ -14,6 +15,8 @@ mod ffi {
 		include!("link.hpp");
 
 		type PointCloud;
+
+		type PointCloudIter;
 	}
 }
 
