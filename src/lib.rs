@@ -1,12 +1,22 @@
 /*
 See end of file for license
 */
-mod bindings;
 
-#[derive(Debug)]
-pub struct PointCloud();
+#[cxx::bridge]
+mod ffi {
+	struct Point {
+		x: f64,
+		y: f64,
+		z: f64,
+	}
 
-pub struct PointCloudIter<'a>(std::marker::PhantomData<&'a PointCloud>);
+	extern "C++" {
+		include!("link.hpp");
+
+		type PointCloud;
+	}
+}
+
 
 #[cfg(test)]
 mod tests {

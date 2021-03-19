@@ -9,9 +9,7 @@ See end of file for license
 #include <memory>
 #include <rust/cxx.h>
 
-struct Point {
-	int64_t x, y, z;
-};
+struct Point;
 
 struct PointCloudIter {
 	virtual ~PointCloudIter() = 0;

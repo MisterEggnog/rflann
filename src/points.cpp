@@ -5,6 +5,8 @@ See end of file for license
 #include <vector>
 #include "nanoflann.hpp"
 
+#include "rustflann/src/lib.rs.h"
+
 #include "cloud.hpp"
 #include "link.hpp"
 
