@@ -3,15 +3,21 @@ See end of file for license
 */
 #include <cstdint>
 #include <vector>
+#include "nanoflann.hpp"
 
 #include "cloud.hpp"
-#include "point_cloud.hpp"
-#include "point_iters.hpp"
 #include "link.hpp"
+
+namespace nf = nanoflann;
+
+using PointCloudKd = nf::KDTreeSingleIndexDynamicAdaptor<
+	nf::L2_Adaptor<float, Cloud>,
+	Cloud,
+	3>;
 
 struct PointCloud::Impl: public PointCloudKd {
 	Impl(std::vector<PointIntern>&& points)
-	: PointCloudKd(3, Cloud(std::move(points)), KDTreeSingleIndexAdaptorParams(10)) {
+	: PointCloudKd(3, Cloud(std::move(points)), nf::KDTreeSingleIndexAdaptorParams(10)) {
 	}
 
 	const std::vector<PointIntern>&
@@ -19,6 +25,19 @@ struct PointCloud::Impl: public PointCloudKd {
 		return this->dataset.points_;
 	}
 };
+
+class PointBufIter final: public PointCloudIter {
+	std::vector<PointIntern>::const_iterator curr_, end_;
+public:
+	PointBufIter(std::vector<PointIntern>::const_iterator begin, std::vector<PointIntern>::const_iterator end);
+
+	~PointBufIter() final;
+
+	bool next(PointIntern& point) final;
+};
+
+
+
 
 // Internal functions
 
