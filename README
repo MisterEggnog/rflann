@@ -8,3 +8,6 @@ any support for the rust side of this library.
 If you want to do anything with this library, go ahead, as it will need a lot
 of changes before it works to my satisfaction.
 With other projects & school, I don't know when or if I can get back to this.
+
+If you need a space partitioning data structure in rust, the rstar or kdtree
+crate may be more useful to you.
