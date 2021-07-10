@@ -4,26 +4,24 @@ See end of file for license
 
 #[cxx::bridge]
 mod ffi {
-	#[derive(Copy, Clone, Default, Debug, PartialEq)]
-	struct Point {
-		x: f64,
-		y: f64,
-		z: f64,
-	}
+    #[derive(Copy, Clone, Default, Debug, PartialEq)]
+    struct Point {
+        x: f64,
+        y: f64,
+        z: f64,
+    }
 
-	extern "C++" {
-		include!("link.hpp");
+    extern "C++" {
+        include!("link.hpp");
 
-		type PointCloud;
+        type PointCloud;
 
-		type PointCloudIter;
-	}
+        type PointCloudIter;
+    }
 }
-
 
 #[cfg(test)]
-mod tests {
-}
+mod tests {}
 
 /*
 Copyright 2020 Baldwin, Josiah

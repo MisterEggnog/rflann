@@ -2,19 +2,19 @@
 See end of file for license
 */
 
-
 fn main() {
-	println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=build.rs");
 
-    let source_files = ["cloud.hpp", "point_cloud.hpp", "link.hpp",
-        "points.hpp"];
+    let source_files = ["cloud.hpp", "point_cloud.hpp", "link.hpp", "points.hpp"];
     for file in source_files.iter() {
-	    println!("cargo:rerun-if-changed=src/{}", file);
+        println!("cargo:rerun-if-changed=src/{}", file);
     }
 
-	cxx_build::bridge("src/lib.rs").file("src/points.cpp")
-	.flag_if_supported("-std=c++17").flag_if_supported("-Isrc")
-	.compile("rflann");
+    cxx_build::bridge("src/lib.rs")
+        .file("src/points.cpp")
+        .flag_if_supported("-std=c++17")
+        .flag_if_supported("-Isrc")
+        .compile("rflann");
 }
 
 /*
